@@ -1,4 +1,5 @@
 from colorfield.fields import ColorField
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -45,5 +46,82 @@ class Ingredient(models.Model):
         return f'{self.name}, {self.measurement_unit}'
 
 
-class Recipes(models.Model):
-    ingredients = 
+class Recipe(models.Model):
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientInRecipe',
+        verbose_name='Ингредиенты для рецепта'
+    )
+    tags = models.ManyToManyField(
+        Tag,
+        related_name='recipes',
+        verbose_name='Тэги'
+    )
+    image = models.ImageField(
+        verbose_name='Изображение рецепта',
+        upload_to='recipes/media/',
+        blank=True
+    )
+    name = models.CharField(
+        verbose_name='Название рецепта',
+        max_length=200
+    )
+    text = models.TextField(
+        verbose_name='Описание рецепта'
+    )
+    cooking_time = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1, 'Минимальное время приготовления 1 минута')
+        ],
+        verbose_name='Время приготовления'
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации',
+        auto_now_add=True
+    )
+    is_favorited = models.BooleanField('В избранном', default=False)
+    is_in_shopping_cart = models.BooleanField(
+        'В списке покупок',
+        default=False
+    )
+
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+        ordering = ('-pub_date',)
+
+    def __str__(self):
+        return self.name[:50]
+
+
+class IngredientInRecipe(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
+        verbose_name='Ингредиенты для рецепта',
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Название рецепта',
+        related_name='recipe_ingredients',
+        on_delete=models.CASCADE,
+    )
+    amount = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MinValueValidator(1, 'Количество не может быть меньше 1')],
+        verbose_name='Количество'
+    )
+
+    class Meta:
+        verbose_name = 'Ингредиент для рецепта'
+        verbose_name_plural = 'Ингредиенты для рецепта'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe_ingredient'
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.recipe}: {self.ingredient}-{self.amount}'[:100]
