@@ -37,6 +37,12 @@ class User(AbstractUser):
         choices=ROLES,
         default=USER
     )
+    followers = models.ManyToManyField(
+        to="self",
+        through="Follow",
+        related_name="following",
+        symmetrical=False,
+    )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
@@ -59,13 +65,13 @@ class Follow(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='follower',
+        related_name='+',
         verbose_name='Подписчик',
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='following',
+        related_name='+',
         verbose_name='Автор рецепта',
     )
 
@@ -77,6 +83,10 @@ class Follow(models.Model):
                 fields=('user', 'author'),
                 name='unique_follow',
             ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('author')),
+                name='Нельзя подписаться на самого себя'
+            )
         )
 
     def __str__(self):
