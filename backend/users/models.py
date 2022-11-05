@@ -43,7 +43,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ('-id')
+        ordering = ('username',)
         constraints = [
             models.UniqueConstraint(
                 fields=['username', 'email'], name='unique_together'
@@ -77,10 +77,6 @@ class Follow(models.Model):
                 fields=('user', 'author'),
                 name='unique_follow',
             ),
-            # models.CheckConstraint(
-            #     check=~Q(user=F('author')),
-            #     name='self_following',
-            # ),
         )
 
     def __str__(self):
