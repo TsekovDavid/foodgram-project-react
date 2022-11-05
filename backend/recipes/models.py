@@ -159,3 +159,23 @@ class Favourites(models.Model):
 
     def __str__(self):
         return f'{self.recipe} в избранном у {self.user}'
+
+
+class ShoppingList(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_recipe_in_shopping_list'
+            )
+        ]
