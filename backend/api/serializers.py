@@ -67,6 +67,51 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
+    class Meta:
+        model = Recipe
+        fields = (
+            'id', 'tags', 'author', 'ingredients', 'is_favorited',
+            'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
+        )
+
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        if request.user.is_anonymous:
+            return False
+        return Favourites.objects.filter(
+            user=request.user, recipe__id=obj.id).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        request = self.context.get('request')
+        if request.user.is_anonymous:
+            return False
+        return ShoppingList.objects.filter(
+            user=request.user, recipe__id=obj.id).exists()
+
+
+class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        source='ingredient',
+        queryset=Ingredient.objects.all()
+    )
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = ('id', 'amount')
+
+    def validate_amount(self, data):
+        if int(data) < 1:
+            raise serializers.ValidationError({
+                'ingredients': ('Минимальное количество: 1'),
+                'msg': data
+            })
+        return data
+
+    def create(self, validated_data):
+        return IngredientInRecipe.objects.create(
+            ingredient=validated_data.get('id'),
+            amount=validated_data.get('amount')
+        )
 
 # class CreateRecipeSerializer(serializers.ModelSerializer):
 #     '''Сериализатор создания рецепта'''
