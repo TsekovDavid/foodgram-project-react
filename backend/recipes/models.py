@@ -117,7 +117,6 @@ class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Название рецепта',
-        related_name='recipe_ingredients',
         on_delete=models.CASCADE,
     )
     amount = models.PositiveSmallIntegerField(
@@ -127,6 +126,7 @@ class IngredientInRecipe(models.Model):
     )
 
     class Meta:
+        default_related_name = 'ingredients_in_recipe'
         verbose_name = 'Ингредиент для рецепта'
         verbose_name_plural = 'Ингредиенты для рецепта'
         constraints = [

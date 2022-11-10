@@ -29,7 +29,7 @@ class UsersSerializer(UserSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -56,48 +56,60 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
         return data
 
 
-class CreateRecipeSerializer(serializers.ModelSerializer):
-    '''Сериализатор создания рецепта'''
-    author = UserSerializer(read_only=True)
-    ingredients = serializers.SerializerMethodField()
-    tags = serializers.PrimaryKeyRelatedField(
-        query_set=Tag.objects.all(),
-        many=True
+class RecipeSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
+    ingredients = IngredientInRecipeSerializer(
+        many=True,
+        read_only=True,
+        source='ingredients'
     )
-    image = Base64ImageField(use_url=True, max_length=None)
+    author = UsersSerializer(read_only=True)
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
-    class Meta:
-        model = Recipe
-        fields = ('id', 'tags', 'author', 'ingredients', 'name', 'text',
-                  'cooking_time', 'image')
 
-    def create(self, validated_data):
-        request = self.context.get('request')
-        tags = validated_data.pop('tags')
-        recipe = Recipe.objects.create(author=request.user, **validated_data)
-        recipe.tags.set('tags')
-        ingredients_set = request.data['ingredients']
-        for ingredient in ingredients_set:
-            try:
-                ingredient_model = Ingredient.objects.get(id=ingredient['id'])
-                amount = ingredient['amount']
-            except KeyError:
-                raise serializers.ValidationError(
-                    'Добавьте ингредиенты в рецепт'
-                )
-            except Ingredient.DoesNotExist:
-                raise serializers.ValidationError(
-                    'Рецепта с таким id нет'
-                )
-            if amount and int(amount) > 0:
-                IngredientInRecipe.objects.create(
-                    recipe=recipe,
-                    ingredients=ingredient_model,
-                    amount=amount
-                )
-            else:
-                raise serializers.ValidationError(
-                    'Не указано количество ингредиента'
-                )
-        recipe.save()
-        return recipe
+# class CreateRecipeSerializer(serializers.ModelSerializer):
+#     '''Сериализатор создания рецепта'''
+#     author = UsersSerializer(read_only=True)
+#     ingredients = serializers.SerializerMethodField()
+#     tags = serializers.PrimaryKeyRelatedField(
+#         query_set=Tag.objects.all(),
+#         many=True
+#     )
+#     image = Base64ImageField(use_url=True, max_length=None)
+
+#     class Meta:
+#         model = Recipe
+#         fields = ('id', 'tags', 'author', 'ingredients', 'name', 'text',
+#                   'cooking_time', 'image')
+
+    # def create(self, validated_data):
+    #     request = self.context.get('request')
+    #     tags = validated_data.pop('tags')
+    #     recipe = Recipe.objects.create(author=request.user, **validated_data)
+    #     recipe.tags.set('tags')
+    #     ingredients_set = request.data['ingredients']
+    #     for ingredient in ingredients_set:
+    #         try:
+    #             ingredient_model = Ingredient.objects.get(id=ingredient['id'])
+    #             amount = ingredient['amount']
+    #         except KeyError:
+    #             raise serializers.ValidationError(
+    #                 'Добавьте ингредиенты в рецепт'
+    #             )
+    #         except Ingredient.DoesNotExist:
+    #             raise serializers.ValidationError(
+    #                 'Рецепта с таким id нет'
+    #             )
+    #         if amount and int(amount) > 0:
+    #             IngredientInRecipe.objects.create(
+    #                 recipe=recipe,
+    #                 ingredients=ingredient_model,
+    #                 amount=amount
+    #             )
+    #         else:
+    #             raise serializers.ValidationError(
+    #                 'Не указано количество ингредиента'
+    #             )
+    #     recipe.save()
+    #     return recipe
