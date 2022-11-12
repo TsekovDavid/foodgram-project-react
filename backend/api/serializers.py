@@ -61,7 +61,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientInRecipeSerializer(
         many=True,
         read_only=True,
-        source='ingredients'
+        source='ingredientinrecipe_set'
     )
     author = UsersSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
@@ -75,43 +75,120 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
+        user = self.context.get('request').user
+        if user.is_anonymous:
             return False
         return Favourites.objects.filter(
-            user=request.user, recipe__id=obj.id).exists()
+            user=user, recipe__id=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
+        user = self.context.get('request').user
+        if user.is_anonymous:
             return False
         return ShoppingList.objects.filter(
-            user=request.user, recipe__id=obj.id).exists()
+            user=user, recipe__id=obj.id).exists()
 
 
-class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        source='ingredient',
-        queryset=Ingredient.objects.all()
+# class CreateIngredientRecipeSerializer(serializers.ModelSerializer):
+#     id = serializers.PrimaryKeyRelatedField(
+#         source='ingredient',
+#         queryset=Ingredient.objects.all()
+#     )
+
+#     class Meta:
+#         model = IngredientInRecipe
+#         fields = ('id', 'amount')
+
+#     def validate_amount(self, data):
+#         if int(data) < 1:
+#             raise serializers.ValidationError({
+#                 'ingredients': ('Минимальное количество: 1'),
+#                 'msg': data
+#             })
+#         return data
+
+#     def create(self, validated_data):
+#         return IngredientInRecipe.objects.create(
+#             ingredient=validated_data.get('id'),
+#             amount=validated_data.get('amount')
+#         )
+
+
+class CreateRecipeSerializer(serializers.ModelSerializer):
+    image = Base64ImageField(use_url=True, max_length=None)
+    author = UsersSerializer(read_only=True)
+    ingredients = IngredientInRecipeSerializer(
+        source='ingredientinrecipe_set',
+        many=True
     )
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
+    cooking_time = serializers.IntegerField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
-        model = IngredientInRecipe
-        fields = ('id', 'amount')
-
-    def validate_amount(self, data):
-        if int(data) < 1:
-            raise serializers.ValidationError({
-                'ingredients': ('Минимальное количество: 1'),
-                'msg': data
-            })
-        return data
-
-    def create(self, validated_data):
-        return IngredientInRecipe.objects.create(
-            ingredient=validated_data.get('id'),
-            amount=validated_data.get('amount')
+        model = Recipe
+        fields = (
+            'id', 'ingredients', 'tags', 'image', 'author',
+            'name', 'text', 'cooking_time', 'is_favorited',
+            'is_in_shopping_cart'
         )
+
+    # def create_ingredients(self, recipe, ingredients):
+    #     IngredientInRecipe.objects.bulk_create([
+    #         IngredientInRecipe(
+    #             recipe=recipe,
+    #             amount=ingredient['amount'],
+    #             ingredient=ingredient['ingredient'],
+    #         ) for ingredient in ingredients
+    #     ])
+
+    # def validate(self, data):
+    #     ingredients = self.initial_data.get('ingredients')
+    #     ingredients_list = []
+    #     for ingredient in ingredients:
+    #         ingredient_id = ingredient['id']
+    #         if ingredient_id in ingredients_list:
+    #             raise serializers.ValidationError(
+    #                 'Ингредиенты не должны повторяться'
+    #             )
+    #         ingredients_list.append(ingredient_id)
+    #     if data['cooking_time'] <= 0:
+    #         raise serializers.ValidationError(
+    #             'Минимальное время приготовления 1 мин'
+    #         )
+    #     return data
+
+    # def create(self, validated_data):
+    #     request = self.context.get('request')
+    #     ingredients = validated_data.pop('ingredients')
+    #     tags = validated_data.pop('tags')
+    #     recipe = Recipe.objects.create(
+    #         author=request.user,
+    #         **validated_data
+    #     )
+    #     self.create_ingredients(recipe, ingredients)
+    #     recipe.tags.set(tags)
+    #     return recipe
+
+    # def update(self, instance, validated_data):
+    #     ingredients = validated_data.pop('ingredients')
+    #     recipe = instance
+    #     IngredientInRecipe.objects.filter(recipe=recipe).delete()
+    #     self.create_ingredients(recipe, ingredients)
+    #     return super().update(recipe, validated_data)
+
+    # def to_representation(self, instance):
+    #     return RecipeSerializer(
+    #         instance,
+    #         context={'request': self.context.get('request')}
+    #     ).data
+
+
+
 
 # class CreateRecipeSerializer(serializers.ModelSerializer):
 #     '''Сериализатор создания рецепта'''

@@ -4,17 +4,14 @@ from django.db import models
 from .validators import validate_username
 
 
-class Roles:
+class User(AbstractUser):
+    """Модель пользователя"""
     USER = 'user'
     ADMIN = 'admin'
     ROLES = [
         (USER, 'Аутентифицированный пользователь'),
         (ADMIN, 'Администратор'),
     ]
-
-
-class User(AbstractUser):
-    """Модель пользователя"""
     username = models.CharField(
         max_length=150,
         unique=True,
@@ -36,9 +33,9 @@ class User(AbstractUser):
     )
     role = models.CharField(
         'Роль',
-        max_length=max(len(role) for role, _ in Roles.ROLES),
-        choices=Roles.ROLES,
-        default=Roles.USER
+        max_length=max(len(role) for role, _ in ROLES),
+        choices=ROLES,
+        default=USER
     )
     # followers = models.ManyToManyField(
     #     to="self",
