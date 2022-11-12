@@ -1,4 +1,5 @@
 import re
+
 from django.core.exceptions import ValidationError
 
 REGEX_FOR_USERNAME = re.compile(r'^[\w.@+-]+')

@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Ingredient, IngredientInRecipe, Recipe, Tag, ShoppingList
+from .models import Ingredient, IngredientInRecipe, Recipe, ShoppingList, Tag
+
 # from django.contrib.auth.models import Group
 # from rest_framework.authtoken.models import TokenProxy
 
