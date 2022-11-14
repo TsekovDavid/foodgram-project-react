@@ -3,10 +3,11 @@ from django.http import HttpResponse
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from api.serializers import UsersSerializer, FollowSerializer, TagSerializer
+from api.serializers import UsersSerializer, IngredientSerializer, FollowSerializer, TagSerializer
 from users.models import Follow, User
-from recipes.models import Tag
+from recipes.models import Tag, Ingredient
 from api.permissions import IsAdminOrReadOnly
 
 
@@ -58,7 +59,18 @@ class UsersViewSet(UserViewSet):
                 {'errors': 'Подписки не существует'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
 class TagsViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
+
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
