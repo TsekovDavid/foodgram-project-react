@@ -48,7 +48,11 @@ class UsersViewSet(UserViewSet):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            if user == author:
-                return Response(
-                    {'errors': ''}
-                )
+            follow = Follow.objects.filter(user=user, author=author)
+            if follow.exists():
+                follow.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {'errors': 'Подписки не существует'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
