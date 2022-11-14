@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from djoser.views import UserViewSet
-from rest_framework import status, viewsats
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from api.serializers import UsersSerializer, FollowSerializer
+from api.serializers import UsersSerializer, FollowSerializer, TagSerializer
 from users.models import Follow, User
+from recipes.models import Tag
+from api.permissions import IsAdminOrReadOnly
 
 
 class UsersViewSet(UserViewSet):
@@ -56,3 +58,7 @@ class UsersViewSet(UserViewSet):
                 {'errors': 'Подписки не существует'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+class TagsViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = (IsAdminOrReadOnly,)
