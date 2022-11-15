@@ -92,11 +92,11 @@ class Recipe(models.Model):
         verbose_name='Дата публикации',
         auto_now_add=True
     )
-    is_favorited = models.BooleanField('В избранном', default=False)
-    is_in_shopping_cart = models.BooleanField(
-        'В списке покупок',
-        default=False
-    )
+    # is_favorited = models.BooleanField('В избранном', default=False)
+    # is_in_shopping_cart = models.BooleanField(
+    #     'В списке покупок',
+    #     default=False
+    # )
 
     class Meta:
         verbose_name = 'Рецепт'
@@ -183,6 +183,7 @@ class ShoppingList(models.Model):
 
     class Meta:
         verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],

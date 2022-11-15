@@ -1,15 +1,21 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
 from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
-from api.serializers import UsersSerializer, RecipeSerializer, FavouriteSerializer, IngredientSerializer, FollowSerializer, TagSerializer, CreateRecipeSerializer
-from users.models import Follow, User
-from recipes.models import Tag, Ingredient, Recipe, Favourites, ShoppingList, IngredientInRecipe
+
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from api.serializers import (CreateRecipeSerializer, FavouriteSerializer,
+                             FollowSerializer, IngredientSerializer,
+                             RecipeSerializer, TagSerializer, UsersSerializer)
+from recipes.models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingList, Tag)
+from users.models import Follow, User
 
 
 class UsersViewSet(UserViewSet):
@@ -96,7 +102,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=(IsOwnerOrReadOnly,))
     def favorite(self, request, **kwargs):
         if request.method == 'POST':
-            return self.add_recipe(Favourites, request, kwargs.get('pk'))    
+            return self.add_recipe(Favourites, request, kwargs.get('pk'))
         if request.method == 'DELETE':
             return self.delete_recipe(Favourites, request, kwargs.get('pk'))
 
