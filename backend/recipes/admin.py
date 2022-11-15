@@ -1,111 +1,34 @@
 from django.contrib import admin
 
-from .models import Ingredient, IngredientInRecipe, Recipe, ShoppingList, Tag
-
-class BaseAdminSettings(admin.ModelAdmin):
-    """Базовая кастомизация админ панели."""
-    empty_value_display = '-пусто-'
-    list_filter = ('author', 'name', 'tags')
+from .models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
+                     ShoppingList, Tag)
 
 
-class IngredientRecipeInline(admin.TabularInline):
-    """
-    Параметры настроек админ зоны
-    модели ингредиентов в рецепте.
-    """
-    model = IngredientRecipe
-    extra = 0
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'color', 'slug')
 
 
-class TagAdmin(BaseAdminSettings):
-    """
-    Кастомизация админ панели (управление тегам).
-    """
-    list_display = (
-        'name',
-        'color',
-        'slug'
-    )
-    list_display_links = ('name',)
-    search_fields = ('name',)
-    list_filter = ('name',)
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'measurement_unit')
 
 
-class IngredientAdmin(BaseAdminSettings):
-    """
-    Кастомизация админ панели (управление ингредиентами).
-    """
-    list_display = (
-        'name',
-        'measurement_unit'
-    )
-    list_display_links = ('name',)
-    search_fields = ('name',)
-    list_filter = ('name',)
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = list_display = ('id', 'author', 'name')
 
 
-class RecipeAdmin(BaseAdminSettings):
-    """
-    Кастомизация админ панели (управление рецептами).
-    """
-    list_display = (
-        'name',
-        'author',
-        'in_favorite'
-    )
-    list_display_links = ('name',)
-    search_fields = ('name',)
-    list_filter = ('author', 'name', 'tags')
-    readonly_fields = ('in_favorite',)
-    filter_horizontal = ('tags',)
-    inlines = (IngredientRecipeInline,)
-
-    def in_favorite(self, obj):
-        return obj.in_favorite.all().count()
-
-    in_favorite.short_description = 'Количество добавлений в избранное'
+@admin.register(ShoppingList)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'recipe')
 
 
-class IngredientRecipeAdmin(admin.ModelAdmin):
-    """
-    Кастомизация админ панели (управление ингридиентами в рецептах).
-    """
-    list_display = (
-        'recipe',
-        'ingredient',
-        'amount',
-    )
-    list_filter = ('recipe', 'ingredient')
+@admin.register(IngredientInRecipe)
+class IngredientsInRecipeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'recipe', 'ingredient', 'amount')
 
 
+@admin.register(Favourites)
 class FavoriteAdmin(admin.ModelAdmin):
-    """
-    Кастомизация админ панели (управление избранных рецептов).
-    """
-    list_display = ('user', 'recipe')
-    list_filter = ('user', 'recipe')
-    search_fields = ('user', 'recipe')
-
-
-class CartAdmin(admin.ModelAdmin):
-    """
-    Кастомизация админ панели (управление избранных рецептов).
-    """
-    list_display = ('recipe', 'user')
-    list_filter = ('recipe', 'user')
-    search_fields = ('user',)
-
-
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(IngredientRecipe, IngredientRecipeAdmin)
-admin.site.register(Favorite, FavoriteAdmin)
-admin.site.register(Cart, CartAdmin)
-
-
-admin.site.register(Ingredient)
-admin.site.register(IngredientInRecipe)
-admin.site.register(Recipe)
-admin.site.register(Tag)
-admin.site.register(ShoppingList)
+    list_display = ('id', 'user', 'recipe')

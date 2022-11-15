@@ -1,16 +1,15 @@
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
-from rest_framework.validators import ValidationError
 from rest_framework.response import Response
 
-from api.filters import RecipeFilter, IngredientFilter
+from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from api.serializers import (CreateRecipeSerializer, FavouriteSerializer,
                              FollowSerializer, IngredientSerializer,
@@ -109,31 +108,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.add_recipe(Favourites, request, kwargs.get('pk'))
         if request.method == 'DELETE':
             return self.delete_recipe(Favourites, request, kwargs.get('pk'))
-
-    # @action(detail=False, methods=['POST', 'DELETE'],
-    #         url_path=r'(?P<id>\d+)/favorite',
-    #         permission_classes=(IsAuthenticated,))
-    # def favorite(self, request, id):
-    #     recipe = get_object_or_404(Recipe, id=id)
-    #     serializer = FavouriteSerializer(
-    #         data={'user': request.user.id, 'recipe': recipe.id}
-    #     # )
-    #     if request.method == 'POST':
-    #         if Favourites.objects.filter(
-    #                 recipe=recipe, user=request.user).exists():
-    #             raise ValidationError('Рецепт уже есть в избранном')
-    #         serializer.is_valid(raise_exception=True)
-    #         serializer.save(user=request.user, recipe=recipe)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     if request.method == 'DELETE':
-    #         favorite = get_object_or_404(
-    #             Favourites, user=request.user, recipe__id=id
-    #         )
-    #         favorite.delete()
-    #     return Response(
-    #         f'Рецепт {favorite.recipe} удален из избранного',
-    #         status=status.HTTP_204_NO_CONTENT
-    #     )
 
     @action(detail=True, methods=['GET', 'POST', 'DELETE'],
             permission_classes=(IsAuthenticated,))
