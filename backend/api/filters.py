@@ -14,7 +14,7 @@ class IngredientFilter(FilterSet):
         fields = ('name',)
 
 
-class TagFilter(FilterSet):
+class RecipeFilter(FilterSet):
     tags = ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
