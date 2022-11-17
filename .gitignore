@@ -134,3 +134,4 @@ dmypy.json
 
 backend/recipes/static/
 backend/recipes/media/
+.vscode/
