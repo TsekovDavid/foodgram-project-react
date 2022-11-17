@@ -1,12 +1,15 @@
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from pathlib import Path
+
+load_dotenv()
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-6x*a*j6tft9jxtp^u^iq1!=as61gguy2=_9z)*jino)k$vb8un'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", [True])
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", ["127.0.0.1", "localhost", "*"])
 
@@ -18,14 +21,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users.apps.UsersConfig',
-    'recipes.apps.RecipesConfig',
-    'api.apps.ApiConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
     'colorfield',
+    'users.apps.UsersConfig',
+    'recipes.apps.RecipesConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +146,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 
-
-MAX_LENGTH_CHAR_FIELD = 150
-MAX_LENGTH_EMAIL_FIELD = 254
+MAX_LEN_USERS_CHARFIELD = 150
+MAX_LEN_EMAIL_FIELD = 254
+MAX_LEN_RECIPES_FIELD = 200
