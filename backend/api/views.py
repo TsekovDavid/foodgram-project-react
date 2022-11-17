@@ -10,7 +10,7 @@ from rest_framework.permissions import (AllowAny, IsAuthenticated,
 from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
-from api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (CreateRecipeSerializer, FavouriteSerializer,
                              FollowSerializer, IngredientSerializer,
                              RecipeSerializer, TagSerializer, UsersSerializer)
@@ -92,17 +92,17 @@ class UsersViewSet(UserViewSet):
             )
 
 
-class TagsViewSet(viewsets.ModelViewSet):
+class TagsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AllowAny,)
     pagination_class = None
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
     pagination_class = None
@@ -173,4 +173,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         current_model = get_object_or_404(model, user=user, recipe=recipe)
         current_model.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-

@@ -143,18 +143,11 @@ class IngredientInRecipe(models.Model):
 
 class Favourites(models.Model):
     '''Модель избранных рецептов'''
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='+'
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='favourites'
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
     class Meta:
+        default_related_name = 'favourites'
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
         constraints = [
@@ -173,17 +166,16 @@ class ShoppingList(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='shopping_list',
-        verbose_name='Пользователь'
+        verbose_name='Пользователь',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='shopping_list',
-        verbose_name='Рецепт'
+        verbose_name='Рецепт',
     )
 
     class Meta:
+        default_related_name = 'shopping_list'
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
         constraints = [
