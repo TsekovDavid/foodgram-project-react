@@ -145,7 +145,7 @@ class Favourites(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favourites'
+        related_name='+'
     )
     recipe = models.ForeignKey(
         Recipe,

@@ -37,12 +37,6 @@ class User(AbstractUser):
         choices=ROLES,
         default=USER
     )
-    # followers = models.ManyToManyField(
-    #     to="self",
-    #     through="Follow",
-    #     related_name="following",
-    #     symmetrical=False,
-    # )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
