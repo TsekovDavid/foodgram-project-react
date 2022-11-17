@@ -141,3 +141,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'recipes/media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+
+
+MAX_LENGTH_CHAR_FIELD = 150
+MAX_LENGTH_EMAIL_FIELD = 254
