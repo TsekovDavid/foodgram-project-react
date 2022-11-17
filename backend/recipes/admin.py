@@ -1,7 +1,16 @@
 from django.contrib import admin
+from django.db import models
 
 from .models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingList, Tag)
+
+
+class IngredientInline(admin.TabularInline):
+    model = IngredientInRecipe
+
+
+# class TagInline(admin.StackedInline):
+#     model = Tag
 
 
 @admin.register(Tag)
@@ -16,8 +25,19 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = list_display = ('id', 'author', 'name')
+    list_display = ('id', 'author', 'name', 'ingredient')
+    inlines = [
+        IngredientInline,
+        # TagInline,
+    ]
 
+    def ingredient(self, obj):
+        ingredients = obj.ingredients.all()
+        ing = []
+        ing.append(
+            [str(ingredient).split(',')[0] for ingredient in ingredients]
+        )
+        return ing[0]
 
 @admin.register(ShoppingList)
 class ShoppingCartAdmin(admin.ModelAdmin):

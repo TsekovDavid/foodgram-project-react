@@ -4,14 +4,9 @@ from django.db import models
 from .validators import validate_username
 from foodgram.settings import MAX_LENGTH_CHAR_FIELD, MAX_LENGTH_EMAIL_FIELD
 
+
 class User(AbstractUser):
     """Модель пользователя"""
-    # USER = 'user'
-    # ADMIN = 'admin'
-    # ROLES = [
-    #     (USER, 'Аутентифицированный пользователь'),
-    #     (ADMIN, 'Администратор'),
-    # ]
     username = models.CharField(
         max_length=MAX_LENGTH_CHAR_FIELD,
         unique=True,
@@ -31,12 +26,6 @@ class User(AbstractUser):
         unique=True,
         max_length=MAX_LENGTH_EMAIL_FIELD
     )
-    # role = models.CharField(
-    #     'Роль',
-    #     max_length=max(len(role) for role, _ in ROLES),
-    #     choices=ROLES,
-    #     default=USER
-    # )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
