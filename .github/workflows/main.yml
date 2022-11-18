@@ -64,11 +64,9 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSWORD }}
-        script: 
-          sudo docker compose down
+        script: |
           cd projects/foodgram/
           touch .env
-          sudo docker pull tsekov/foodgram_backend:latest
           echo DEBUG=${{ secrets.DEBUG }} >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
