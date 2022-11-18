@@ -9,10 +9,6 @@ class IngredientInline(admin.TabularInline):
     model = IngredientInRecipe
 
 
-# class TagInline(admin.StackedInline):
-#     model = Tag
-
-
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'color', 'slug')
@@ -28,16 +24,12 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'author', 'name', 'ingredient')
     inlines = [
         IngredientInline,
-        # TagInline,
     ]
 
     def ingredient(self, obj):
-        ingredients = obj.ingredients.all()
-        ing = []
-        ing.append(
-            [str(ingredient).split(',')[0] for ingredient in ingredients]
-        )
-        return ing[0]
+        return (', '.join([str(ingredient).split(',')[0]
+                for ingredient in obj.ingredients.all()]))
+
 
 @admin.register(ShoppingList)
 class ShoppingCartAdmin(admin.ModelAdmin):

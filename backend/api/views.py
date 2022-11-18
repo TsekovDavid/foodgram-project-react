@@ -19,29 +19,6 @@ from recipes.models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
 from users.models import Follow, User
 
 
-def create_shopping_list(ingredients, user):
-    filename = f'{user.username}_shopping_list.txt'
-    shopping_cart = {}
-    for ingredient in ingredients:
-        name = ingredient[0]
-        shopping_cart[name] = {
-            'amount': ingredient[2],
-            'measurement_unit': ingredient[1]
-        }
-        shopping_list = ['Список покупок\n']
-        for key, value in shopping_cart.items():
-            shopping_list.append(
-                f'{key}: {value["amount"]} {value["measurement_unit"]}\n'
-            )
-    response = HttpResponse(
-        shopping_list, content_type='text.txt; charset=utf-8'
-    )
-    response['Content-Disposition'] = (
-        f'attachment; filename={filename}.txt'
-    )
-    return response
-
-
 class UsersViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
@@ -140,6 +117,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE':
             return self.delete_recipe(ShoppingList, request, kwargs.get('pk'))
 
+    def create_shopping_list(ingredients, user):
+        filename = f'{user.username}_shopping_list.txt'
+        shopping_cart = {}
+        for ingredient in ingredients:
+            name = ingredient[0]
+            shopping_cart[name] = {
+                'amount': ingredient[2],
+                'measurement_unit': ingredient[1]
+            }
+            shopping_list = ['Список покупок\n']
+            for key, value in shopping_cart.items():
+                shopping_list.append(
+                    f'{key}: {value["amount"]} {value["measurement_unit"]}\n'
+                )
+        response = HttpResponse(
+            shopping_list, content_type='text.txt; charset=utf-8'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename={filename}.txt'
+        )
+        return response
+
     @action(
         methods=['GET'],
         detail=False,
@@ -155,7 +154,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).order_by('ingredient__name').annotate(
             ingredient_sum=Sum('amount')
         )
-        return create_shopping_list(ingredients, user)
+        return self.create_shopping_list(ingredients, user)
 
     def add_recipe(self, model, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
@@ -168,8 +167,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe(self, model, request, pk):
-        recipe = get_object_or_404(Recipe, id=pk)
-        user = request.user
-        current_model = get_object_or_404(model, user=user, recipe=recipe)
-        current_model.delete()
+        get_object_or_404(
+            model,
+            user=request.user,
+            recipe=get_object_or_404(Recipe, id=pk)).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

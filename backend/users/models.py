@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 from django.db import models
-
-from foodgram.settings import MAX_LEN_EMAIL_FIELD, MAX_LEN_USERS_CHARFIELD
 
 from .validators import validate_username
 
@@ -9,23 +8,23 @@ from .validators import validate_username
 class User(AbstractUser):
     """Модель пользователя"""
     username = models.CharField(
-        max_length=MAX_LEN_USERS_CHARFIELD,
+        max_length=settings.MAX_LEN_USERS_CHARFIELD,
         unique=True,
         validators=[validate_username],
         verbose_name='Уникальный юзернейм'
     )
     first_name = models.CharField(
-        max_length=MAX_LEN_USERS_CHARFIELD,
+        max_length=settings.MAX_LEN_USERS_CHARFIELD,
         verbose_name='Имя'
     )
     last_name = models.CharField(
-        max_length=MAX_LEN_USERS_CHARFIELD,
+        max_length=settings.MAX_LEN_USERS_CHARFIELD,
         verbose_name='Фамилия'
     )
     email = models.EmailField(
         verbose_name='Почта',
         unique=True,
-        max_length=MAX_LEN_EMAIL_FIELD
+        max_length=settings.MAX_LEN_EMAIL_FIELD
     )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
