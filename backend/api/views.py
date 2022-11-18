@@ -1,21 +1,20 @@
-from django.db.models import Sum
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
-from rest_framework.response import Response
-
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (CreateRecipeSerializer, FavouriteSerializer,
                              FollowSerializer, IngredientSerializer,
                              RecipeSerializer, TagSerializer, UsersSerializer)
+from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
 from recipes.models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingList, Tag)
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
 from users.models import Follow, User
 
 
