@@ -1,6 +1,6 @@
 from colorfield.fields import ColorField
-from django.core.validators import MinValueValidator
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from users.models import User
