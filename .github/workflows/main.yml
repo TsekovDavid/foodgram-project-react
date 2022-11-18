@@ -71,7 +71,7 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSWORD }}
         script: |
             sudo docker compose down
-            sudo docker pull tsekov/foodgram-backend:latest
+            sudo docker pull tsekov/foodgram_backend:latest
             touch .env
             echo SECRET_KEY='${{ secrets.SECRET_KEY }}' >> .env 
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
