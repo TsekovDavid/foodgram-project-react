@@ -21,7 +21,8 @@ class SubscribeMixin:
 
 
 class UsersCreateSerializer(UserCreateSerializer, SubscribeMixin):
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField(
+        method_name='get_is_subscribed')
 
     class Meta:
         model = User
@@ -30,12 +31,10 @@ class UsersCreateSerializer(UserCreateSerializer, SubscribeMixin):
             'last_name', 'is_subscribed', 'password'
         )
 
-    def get_is_subscribed(self, obj: User):
-        return super().get_is_subscribed(obj)
-
 
 class UsersSerializer(UserSerializer, SubscribeMixin):
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField(
+        method_name='get_is_subscribed')
 
     class Meta:
         model = User
@@ -43,9 +42,6 @@ class UsersSerializer(UserSerializer, SubscribeMixin):
             'email', 'id', 'username', 'first_name',
             'last_name', 'is_subscribed'
         )
-
-    def get_is_subscribed(self, obj: User):
-        return super().get_is_subscribed(obj)
 
 
 class TagSerializer(serializers.ModelSerializer):
