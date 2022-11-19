@@ -88,6 +88,7 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSWORD }}
         script: |
           cd projects/foodgram/
+          sodu rm .env
           touch .env
           echo DEBUG=${{ secrets.DEBUG }} >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
