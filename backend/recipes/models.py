@@ -2,6 +2,7 @@ from colorfield.fields import ColorField
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
+
 from users.models import User
 
 
@@ -32,7 +33,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    '''Модель ингредиентов'''
+    """Модель ингредиентов"""
     name = models.CharField(
         max_length=settings.MAX_LEN_RECIPES_FIELD,
         verbose_name='Ингредиент',
