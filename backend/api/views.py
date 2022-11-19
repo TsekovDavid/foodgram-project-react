@@ -13,10 +13,10 @@ from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (CreateRecipeSerializer, FavouriteSerializer,
                              FollowSerializer, IngredientSerializer,
                              RecipeSerializer, TagSerializer, UsersSerializer)
+from api.utils import create_shopping_list
 from recipes.models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingList, Tag)
 from users.models import Follow, User
-from api.utils import create_shopping_list
 
 
 class UsersViewSet(UserViewSet):
