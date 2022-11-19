@@ -110,6 +110,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'api.paginators.CustomPagination',
 }
 
+
 DJOSER = {
     'HIDE_USERS': False,
     'PERMISSIONS': {
