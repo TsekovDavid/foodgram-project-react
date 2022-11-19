@@ -1,5 +1,4 @@
 from django.db.models import Sum
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -17,6 +16,7 @@ from api.serializers import (CreateRecipeSerializer, FavouriteSerializer,
 from recipes.models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingList, Tag)
 from users.models import Follow, User
+from api.utils import create_shopping_list
 
 
 class UsersViewSet(UserViewSet):
@@ -117,28 +117,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'DELETE':
             return self.delete_recipe(ShoppingList, request, kwargs.get('pk'))
 
-    def create_shopping_list(ingredients, user):
-        filename = f'{user.username}_shopping_list.txt'
-        shopping_cart = {}
-        for ingredient in ingredients:
-            name = ingredient[0]
-            shopping_cart[name] = {
-                'amount': ingredient[2],
-                'measurement_unit': ingredient[1]
-            }
-            shopping_list = ['Список покупок\n']
-            for key, value in shopping_cart.items():
-                shopping_list.append(
-                    f'{key}: {value["amount"]} {value["measurement_unit"]}\n'
-                )
-        response = HttpResponse(
-            shopping_list, content_type='text.txt; charset=utf-8'
-        )
-        response['Content-Disposition'] = (
-            f'attachment; filename={filename}.txt'
-        )
-        return response
-
     @action(
         methods=['GET'],
         detail=False,
@@ -146,15 +124,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         user = self.request.user
-        ingredients = IngredientInRecipe.objects.filter(
+        ingredients = list(IngredientInRecipe.objects.filter(
             recipe__shopping_list__user=request.user
         ).values_list(
             'ingredient__name',
             'ingredient__measurement_unit'
         ).order_by('ingredient__name').annotate(
             ingredient_sum=Sum('amount')
-        )
-        return self.create_shopping_list(ingredients, user)
+        ))
+        return create_shopping_list(ingredients=ingredients, user=user)
 
     def add_recipe(self, model, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
