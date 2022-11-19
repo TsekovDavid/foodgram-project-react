@@ -20,7 +20,7 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'author', 'name', 'ingredient')
+    list_display = ('id', 'author', 'name', 'ingredient', 'number_of_likes')
     inlines = [
         IngredientInline,
     ]
@@ -28,6 +28,9 @@ class RecipeAdmin(admin.ModelAdmin):
     def ingredient(self, obj):
         return (', '.join([str(ingredient).split(',')[0]
                 for ingredient in obj.ingredients.all()]))
+
+    def number_of_likes(self, obj):
+        return obj.favourites.count()
 
 
 @admin.register(ShoppingList)

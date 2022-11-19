@@ -10,10 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', [False])
+DEBUG = os.getenv('DEBUG', default=False)
 
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['127.0.0.1', 'localhost', '62.84.123.219', '*'])
-ALLOWED_HOSTS = ('*')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default=['*'])
 
 
 INSTALLED_APPS = [
