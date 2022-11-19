@@ -6,7 +6,7 @@ from users.models import User
 
 
 class Tag(models.Model):
-    '''Модель тега'''
+    """Модель тега"""
     name = models.CharField(
         max_length=settings.MAX_LEN_RECIPES_FIELD,
         verbose_name='Название',
@@ -58,7 +58,7 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    '''Модель рецепта'''
+    """Модель рецепта"""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -108,7 +108,7 @@ class Recipe(models.Model):
 
 
 class IngredientInRecipe(models.Model):
-    '''Связующая модель ингредиентов для рецепта'''
+    """Связующая модель ингредиентов для рецепта"""
     ingredient = models.ForeignKey(
         Ingredient,
         verbose_name='Ингредиенты для рецепта',
@@ -141,7 +141,7 @@ class IngredientInRecipe(models.Model):
 
 
 class Favourites(models.Model):
-    '''Модель избранных рецептов'''
+    """Модель избранных рецептов"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
@@ -161,7 +161,7 @@ class Favourites(models.Model):
 
 
 class ShoppingList(models.Model):
-    '''Модель списка покупок'''
+    """Модель списка покупок"""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
