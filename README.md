@@ -65,3 +65,4 @@
     -  http://localhost/admin/ - админка;
     -  http://localhost/api/ - API проекта
     -  http://localhost/api/docs/redoc.html - документация к API
+---
