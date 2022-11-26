@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -6,43 +7,25 @@ from .validators import validate_username
 
 class User(AbstractUser):
     """Модель пользователя"""
-    USER = 'user'
-    ADMIN = 'admin'
-    ROLES = [
-        (USER, 'Аутентифицированный пользователь'),
-        (ADMIN, 'Администратор'),
-    ]
     username = models.CharField(
-        max_length=150,
+        max_length=settings.MAX_LEN_USERS_CHARFIELD,
         unique=True,
         validators=[validate_username],
         verbose_name='Уникальный юзернейм'
     )
     first_name = models.CharField(
-        max_length=150,
+        max_length=settings.MAX_LEN_USERS_CHARFIELD,
         verbose_name='Имя'
     )
     last_name = models.CharField(
-        max_length=150,
+        max_length=settings.MAX_LEN_USERS_CHARFIELD,
         verbose_name='Фамилия'
     )
     email = models.EmailField(
         verbose_name='Почта',
         unique=True,
-        max_length=254
+        max_length=settings.MAX_LEN_EMAIL_FIELD
     )
-    role = models.CharField(
-        'Роль',
-        max_length=max(len(role) for role, _ in ROLES),
-        choices=ROLES,
-        default=USER
-    )
-    # followers = models.ManyToManyField(
-    #     to="self",
-    #     through="Follow",
-    #     related_name="following",
-    #     symmetrical=False,
-    # )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 

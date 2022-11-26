@@ -4,6 +4,10 @@ from .models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
                      ShoppingList, Tag)
 
 
+class IngredientInline(admin.TabularInline):
+    model = IngredientInRecipe
+
+
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'color', 'slug')
@@ -16,7 +20,17 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = list_display = ('id', 'author', 'name')
+    list_display = ('id', 'author', 'name', 'ingredient', 'number_of_likes')
+    inlines = [
+        IngredientInline,
+    ]
+
+    def ingredient(self, obj):
+        return (', '.join([str(ingredient).split(',')[0]
+                for ingredient in obj.ingredients.all()]))
+
+    def number_of_likes(self, obj):
+        return obj.favourites.count()
 
 
 @admin.register(ShoppingList)
